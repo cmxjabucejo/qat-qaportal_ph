@@ -33,6 +33,7 @@ const CreateQAFormModal = ({ isOpen, onClose, onSuccess, user }) => {
     setSelectedLob("");
     setSelectedTask("");
     setIsSubmitting(false);
+    setSubmitStatus(null);
   };
 
   // useEffect(() => {
@@ -378,6 +379,9 @@ const CreateQAFormModal = ({ isOpen, onClose, onSuccess, user }) => {
       // ✅ SUCCESS — show prompt only
       setIsSubmitting(false);
       setSubmitStatus("success");
+
+      // clear modal form
+      resetForm();
     } catch (err) {
       console.error("❌ Submission failed:", err);
 
@@ -821,17 +825,14 @@ const CreateQAFormModal = ({ isOpen, onClose, onSuccess, user }) => {
               <button
                 onClick={() => {
                   if (submitStatus === "success") {
-                    resetForm(); // ✅ deep reset
-                    onSuccess?.(); // ✅ parent refresh + close modal
+                    resetForm();
+                    setSubmitStatus(null); // clear success modal
+                    onSuccess?.();
+                    onClose(); // close modal
                   } else {
-                    setSubmitStatus(null); // Try Again → stay open
+                    setSubmitStatus(null);
                   }
                 }}
-                className={`px-5 py-2 rounded text-white ${
-                  submitStatus === "success"
-                    ? "bg-green-600 hover:bg-green-700"
-                    : "bg-red-600 hover:bg-red-700"
-                }`}
               >
                 {submitStatus === "success" ? "OK" : "Try Again"}
               </button>
