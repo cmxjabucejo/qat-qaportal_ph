@@ -379,9 +379,6 @@ const CreateQAFormModal = ({ isOpen, onClose, onSuccess, user }) => {
       // ✅ SUCCESS — show prompt only
       setIsSubmitting(false);
       setSubmitStatus("success");
-
-      // clear modal form
-      resetForm();
     } catch (err) {
       console.error("❌ Submission failed:", err);
 
@@ -825,14 +822,19 @@ const CreateQAFormModal = ({ isOpen, onClose, onSuccess, user }) => {
               <button
                 onClick={() => {
                   if (submitStatus === "success") {
-                    resetForm();
-                    setSubmitStatus(null); // clear success modal
-                    onSuccess?.();
-                    onClose(); // close modal
+                    resetForm(); // clear form
+                    setSubmitStatus(null); // close success popup
+                    onSuccess?.(); // refresh parent if needed
+                    onClose(); // close modal AFTER success prompt
                   } else {
                     setSubmitStatus(null);
                   }
                 }}
+                className={`px-5 py-2 rounded text-white ${
+                  submitStatus === "success"
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-red-600 hover:bg-red-700"
+                }`}
               >
                 {submitStatus === "success" ? "OK" : "Try Again"}
               </button>
