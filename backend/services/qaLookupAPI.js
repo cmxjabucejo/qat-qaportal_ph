@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/dbconfig");
+const { requireRole } = require("../middlewares/authMiddleware");
 
 //------------ Employee Lookup --------------
 router.get("/employees", async (req, res) => {
@@ -27,8 +28,11 @@ router.get("/employees", async (req, res) => {
 
 //--------------Account / LOB / TASK -------------------
 //Accoount List
-router.get("/accountList", async (req, res) => {
-  const query = `
+router.get(
+  "/accountList",
+  requireRole("Admin", "QA Admin", "Super Admin"),
+  async (req, res) => {
+    const query = `
     SELECT ACCOUNTCODE, ACCOUNT, LOB, TASK
     FROM 1000_cmx_appdata_client_database.db_cmx_client_roster
      WHERE ID IN (
@@ -39,15 +43,16 @@ router.get("/accountList", async (req, res) => {
     )
     ORDER BY ID DESC;`;
 
-  try {
-    const [result] = await db.query(query);
+    try {
+      const [result] = await db.query(query);
 
-    res.json(result);
-  } catch (error) {
-    console.error("Error fetching account list:", error);
-    res.status(500).json({ error: "Database error" });
-  }
-});
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching account list:", error);
+      res.status(500).json({ error: "Database error" });
+    }
+  },
+);
 
 //LOB List
 router.get("/lobList", async (req, res) => {
