@@ -173,7 +173,7 @@ router.post("/check-email", async (req, res) => {
 
       return res.status(403).json({
         success: false,
-        error: "User not allowed",
+        error: "Invalid credentials",
       });
     }
 
@@ -243,7 +243,7 @@ router.post("/sendOTP", async (req, res) => {
 
       return res.status(400).json({
         success: false,
-        message: "User not allowed.",
+        message: "Invalid credentials",
       });
     }
 

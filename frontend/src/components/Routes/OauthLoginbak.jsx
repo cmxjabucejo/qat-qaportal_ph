@@ -42,7 +42,7 @@ const OauthLogin = () => {
       const checkData = await checkRes.json();
 
       if (!checkRes.ok || !checkData.success) {
-        setError(checkData.error || "Email is not registered or not authorized.");
+        setError(checkData.error || "Invalid credentials");
         return;
       }
 
@@ -59,13 +59,15 @@ const OauthLogin = () => {
 
       // Optional: Enforce only active users
       if (userStatus && userStatus.toLowerCase() !== "active") {
-        setError("This account is not active. Please contact your administrator.");
+        setError(
+          "This account is not active. Please contact your administrator.",
+        );
         return;
       }
 
       // ✅ Save pendingUser for OTP step (existing user only)
       UserService.setPendingUser({
-        empId, 
+        empId,
         userid,
         userEmail,
         lastName,
@@ -100,7 +102,7 @@ const OauthLogin = () => {
       localStorage.setItem("pendingOtpHashed", result.otpHashed);
       localStorage.setItem(
         "pendingRequestedAt",
-        requestedDateTime.toISOString()
+        requestedDateTime.toISOString(),
       );
       localStorage.setItem("pendingExpiryAt", expiryDateTime.toISOString());
       localStorage.setItem("pendingEmail", email);
@@ -187,20 +189,20 @@ const OauthLogin = () => {
             )}
           </button>
 
-         {error && <p className="text-red-600 text-xs mt-4">{error}</p>}
+          {error && <p className="text-red-600 text-xs mt-4">{error}</p>}
 
           <p className="text-[11px] text-gray-800 mt-5 text-center">
             This is a passwordless login for existing Callmax users. Check your
             inbox for a one-time code to complete sign in.
           </p>
         </div>
-        <div className="mt-3"> 
-            <p className="text-[10px] text-white text-center">
-              © 2025 CMX PH QA Portal v4.2.5
-            </p>
-            <p className="text-[10px]  text-white text-center">
-              DREAM Dev Ops || Callmax Solutions International All Rights Reserved
-            </p>
+        <div className="mt-3">
+          <p className="text-[10px] text-white text-center">
+            © 2025 CMX PH QA Portal v4.2.5
+          </p>
+          <p className="text-[10px]  text-white text-center">
+            DREAM Dev Ops || Callmax Solutions International All Rights Reserved
+          </p>
         </div>
       </div>
     </div>

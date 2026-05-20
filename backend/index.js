@@ -55,6 +55,7 @@ const PORT = process.env.SERVER_PORT || 5010;
 ========================================
 */
 app.use(helmet());
+
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
 /*
