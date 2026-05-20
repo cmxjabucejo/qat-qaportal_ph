@@ -12,6 +12,7 @@ const { RedisStore: RateLimitRedisStore } = require("rate-limit-redis");
 // 🔐 SECURITY
 const helmet = require("helmet");
 const { rateLimit, ipKeyGenerator } = require("express-rate-limit");
+const { requireSession } = require("./middlewares/authMiddleware");
 
 dotenv.config();
 
@@ -54,6 +55,7 @@ const PORT = process.env.SERVER_PORT || 5010;
 ========================================
 */
 app.use(helmet());
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 /*
 ========================================
@@ -62,7 +64,7 @@ app.use(helmet());
 */
 app.use(
   cors({
-    origin: ["http://localhost:3001", "https://qaportal.cmxph.com"],
+    origin: [FRONTEND_URL],
     credentials: true,
   }),
 );
@@ -96,15 +98,8 @@ redisClient.on("error", (err) => {
 🔐 SESSION CHECK MIDDLEWARE
 ========================================
 */
-function requireSession(req, res, next) {
-  if (!req.session?.user) {
-    return res.status(401).json({
-      success: false,
-      message: "Session expired",
-    });
-  }
-  next();
-}
+
+const allowedStatuses = ["Active"];
 
 /*
 ========================================
@@ -188,11 +183,11 @@ async function startServer() {
     const qaFormsAPI = require("./services/qaFormsAPI");
     const qaLookupAPI = require("./services/qaLookupAPI");
 
-    // OTP limiter only for OTP route
-    app.use("/api/sendOTP", otpLimiter);
-
     // General limiter for everything else
     app.use("/api", generalLimiter);
+
+    // OTP limiter only for OTP route
+    app.use("/api/sendOTP", otpLimiter);
 
     // 🔓 PUBLIC ROUTES (NO SESSION)
     app.use("/api", authAPI);

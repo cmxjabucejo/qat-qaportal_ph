@@ -37,11 +37,12 @@ function RequireAuth({ isAuthed }) {
 ========================================
 */
 function RequireAdminOrHigher({ user }) {
+  const allowedUser = ["Admin", "Super Admin", "QA Admin"];
   const location = useLocation();
 
   const role = user?.userLevel || user?.user_access_level;
 
-  if (!role || role === "User") {
+  if (!role || !allowedUser.includes(role)) {
     return (
       <Navigate to="/Dashboard" replace state={{ from: location.pathname }} />
     );

@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/dbconfig");
+const { requireRole } = require("../middlewares/authMiddleware");
 
-router.get("/getAppUsers", async (req, res) => {
+router.get("/getAppUsers", requireRole("Admin"), async (req, res) => {
   const [rows] = await db.execute(`
     SELECT * FROM 0000_cmx_appdata_appusers.db_cmx_appusers_qaportal_ph
   `);
@@ -10,7 +11,7 @@ router.get("/getAppUsers", async (req, res) => {
   res.json({ success: true, data: rows });
 });
 
-router.post("/addAppUser", async (req, res) => {
+router.post("/addAppUser", requireRole("Admin"), async (req, res) => {
   const {
     empId,
     user_email,
