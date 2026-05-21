@@ -9,7 +9,7 @@ const {
 router.get(
   "/getAppUsers",
   requireSession,
-  requireRole("Admin"),
+  requireRole("Admin", "QA Admin", "Super Admin"),
   async (req, res) => {
     const [rows] = await db.execute(`
     SELECT * FROM 0000_cmx_appdata_appusers.db_cmx_appusers_qaportal_ph
@@ -22,7 +22,7 @@ router.get(
 router.post(
   "/addAppUser",
   requireSession,
-  requireRole("Admin"),
+  requireRole("Admin", "QA Admin", "Super Admin"),
   async (req, res) => {
     const {
       empId,
@@ -74,7 +74,7 @@ router.post(
 router.post(
   "/updateAppUser",
   requireSession,
-  requireRole("Admin"),
+  requireRole("Admin", "QA Admin", "Super Admin"),
   async (req, res) => {
     const { empId, user_access_level, user_status } = req.body;
 

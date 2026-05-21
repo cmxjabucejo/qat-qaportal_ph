@@ -109,75 +109,83 @@ router.get("/qa_form_by_name/:qaFormName", async (req, res) => {
 
 //QA Form Designer
 //Designer
-router.post("/qa_forms_list", requireRole("Admin"), async (req, res) => {
-  try {
-    const {
-      QA_FORM_NAME,
-      ACCOUNT,
-      LOB,
-      TASK,
-      CREATED_DATE,
-      CREATED_BY,
-      STATUS,
-    } = req.body;
+router.post(
+  "/qa_forms_list",
+  requireRole("Admin", "QA Admin", "Super Admin"),
+  async (req, res) => {
+    try {
+      const {
+        QA_FORM_NAME,
+        ACCOUNT,
+        LOB,
+        TASK,
+        CREATED_DATE,
+        CREATED_BY,
+        STATUS,
+      } = req.body;
 
-    const sql = `
+      const sql = `
       INSERT INTO 1003_cmx_appdata_qaportal_database_ph.db_qa_forms_list
       (QA_FORM_NAME, ACCOUNT, LOB, TASK, CREATED_DATE, CREATED_BY, STATUS)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
-    await db.execute(sql, [
-      QA_FORM_NAME,
-      ACCOUNT,
-      LOB,
-      TASK,
-      CREATED_DATE,
-      CREATED_BY,
-      STATUS,
-    ]);
+      await db.execute(sql, [
+        QA_FORM_NAME,
+        ACCOUNT,
+        LOB,
+        TASK,
+        CREATED_DATE,
+        CREATED_BY,
+        STATUS,
+      ]);
 
-    res.status(200).send({ message: "Form list inserted." });
-  } catch (err) {
-    console.error("Insert failed:", err);
-    res.status(500).send({ error: "Insert failed" });
-  }
-});
-
-router.post("/qa_forms_table", requireRole("Admin"), async (req, res) => {
-  try {
-    const data = req.body;
-
-    if (!data.QA_FORM_NAME) {
-      return res.status(400).json({ error: "Missing QA_FORM_NAME." });
+      res.status(200).send({ message: "Form list inserted." });
+    } catch (err) {
+      console.error("Insert failed:", err);
+      res.status(500).send({ error: "Insert failed" });
     }
+  },
+);
 
-    const columns = Object.keys(data)
-      .map((col) => `\`${col}\``)
-      .join(", ");
-    const placeholders = Object.keys(data)
-      .map(() => "?")
-      .join(", ");
-    const values = Object.values(data);
+router.post(
+  "/qa_forms_table",
+  requireRole("Admin", "QA Admin", "Super Admin"),
+  async (req, res) => {
+    try {
+      const data = req.body;
 
-    const sql = `
+      if (!data.QA_FORM_NAME) {
+        return res.status(400).json({ error: "Missing QA_FORM_NAME." });
+      }
+
+      const columns = Object.keys(data)
+        .map((col) => `\`${col}\``)
+        .join(", ");
+      const placeholders = Object.keys(data)
+        .map(() => "?")
+        .join(", ");
+      const values = Object.values(data);
+
+      const sql = `
       INSERT INTO 1003_cmx_appdata_qaportal_database_ph.db_qa_forms_table
       (${columns})
       VALUES (${placeholders})
     `;
 
-    await db.execute(sql, values);
+      await db.execute(sql, values);
 
-    res.status(200).json({ message: "QA Form saved to db_qa_forms_table." });
-  } catch (err) {
-    console.error("❌ Error saving QA form:", err);
-    res.status(500).json({ error: "Insert failed", details: err.message });
-  }
-});
+      res.status(200).json({ message: "QA Form saved to db_qa_forms_table." });
+    } catch (err) {
+      console.error("❌ Error saving QA form:", err);
+      res.status(500).json({ error: "Insert failed", details: err.message });
+    }
+  },
+);
 
 router.put(
   "qa_form_list/:qaFormName/status",
-  requireRole("Admin"),
+  requireRole("Admin", "QA Admin", "Super Admin"),
   async (req, res) => {
     const { qaFormName } = req.params;
     const { status } = req.body;
