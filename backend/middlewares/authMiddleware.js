@@ -18,6 +18,9 @@ function requireSession(req, res, next) {
   next();
 }
 
+const adminRoles = ["QA Admin", "Admin", "Dev"];
+const agentRoles = ["QA"];
+
 function requireRole(...allowedRoles) {
   return (req, res, next) => {
     const sessionUser = req.session?.user;
@@ -39,4 +42,4 @@ function requireRole(...allowedRoles) {
   };
 }
 
-module.exports = { requireRole, requireSession };
+module.exports = { requireRole, requireSession, adminRoles, agentRoles };

@@ -37,7 +37,7 @@ function RequireAuth({ isAuthed }) {
 ========================================
 */
 function RequireAdminOrHigher({ user }) {
-  const allowedUser = ["Admin", "Super Admin", "QA Admin"];
+  const allowedUser = ["QA Admin", "Admin", "Dev"];
   const location = useLocation();
 
   const role = user?.userLevel || user?.user_access_level;

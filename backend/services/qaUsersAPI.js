@@ -4,12 +4,13 @@ const db = require("../config/dbconfig");
 const {
   requireRole,
   requireSession,
+  adminRoles,
 } = require("../middlewares/authMiddleware");
 
 router.get(
   "/getAppUsers",
   requireSession,
-  requireRole("Admin", "QA Admin", "Super Admin"),
+  requireRole(...adminRoles),
   async (req, res) => {
     const [rows] = await db.execute(`
     SELECT * FROM 0000_cmx_appdata_appusers.db_cmx_appusers_qaportal_ph
@@ -22,7 +23,7 @@ router.get(
 router.post(
   "/addAppUser",
   requireSession,
-  requireRole("Admin", "QA Admin", "Super Admin"),
+  requireRole(...adminRoles),
   async (req, res) => {
     const {
       empId,
@@ -74,7 +75,7 @@ router.post(
 router.post(
   "/updateAppUser",
   requireSession,
-  requireRole("Admin", "QA Admin", "Super Admin"),
+  requireRole(...adminRoles),
   async (req, res) => {
     const { empId, user_access_level, user_status } = req.body;
 

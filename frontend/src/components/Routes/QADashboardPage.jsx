@@ -51,7 +51,6 @@ const QADashboardPage = ({ user }) => {
     setUserId(user.userid);
     setUserName(user.fullName);
     setEmpId(user.empId);
-    console.log("user", user);
     fetchAudits();
   }, [user]);
 
@@ -62,7 +61,6 @@ const QADashboardPage = ({ user }) => {
       });
 
       const data = res.data?.data || [];
-      console.log("AUDITS DATA:", data); // debug
       setAudits(data);
     } catch (err) {
       console.error("Error fetching audits", err);

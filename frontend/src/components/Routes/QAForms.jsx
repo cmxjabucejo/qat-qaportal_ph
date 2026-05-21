@@ -184,7 +184,6 @@ const QAForms = ({ user }) => {
     setUserId(user.userid);
     setUserName(user.fullName);
     setEmpId(user.empId);
-    console.log("user", user);
     // fetchAudits();
     fetchData(); // ✅ correct
     fetchEmployees(); // ✅ correct
@@ -354,7 +353,6 @@ const QAForms = ({ user }) => {
       await axios.post(`${SERVER_URL}/api/save_qa_audit`, auditPayload, {
         withCredentials: true,
       });
-      console.log("✅ QA Audit saved successfully.");
       setSaveSuccess(true);
       setShowSaveModal(true);
       // Optional: Reset form
