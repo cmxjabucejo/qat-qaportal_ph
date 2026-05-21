@@ -15,7 +15,6 @@ function requireSession(req, res, next) {
       message: "Unauthorized",
     });
   }
-
   next();
 }
 
@@ -33,10 +32,9 @@ function requireRole(...allowedRoles) {
     if (!allowedRoles.includes(sessionUser.userLevel)) {
       return res.status(403).json({
         success: false,
-        message: "Forbidden",
+        message: "Unauthorized",
       });
     }
-
     next();
   };
 }
