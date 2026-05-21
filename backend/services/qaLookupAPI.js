@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/dbconfig");
-const { requireRole } = require("../middlewares/authMiddleware");
+const { requireRole, adminRoles } = require("../middlewares/authMiddleware");
 
 //------------ Employee Lookup --------------
 router.get("/employees", async (req, res) => {
@@ -28,11 +28,8 @@ router.get("/employees", async (req, res) => {
 
 //--------------Account / LOB / TASK -------------------
 //Accoount List
-router.get(
-  "/accountList",
-  requireRole("Admin", "QA Admin", "Super Admin"),
-  async (req, res) => {
-    const query = `
+router.get("/accountList", requireRole(...adminRoles), async (req, res) => {
+  const query = `
     SELECT ACCOUNTCODE, ACCOUNT, LOB, TASK
     FROM 1000_cmx_appdata_client_database.db_cmx_client_roster
      WHERE ID IN (
@@ -43,19 +40,18 @@ router.get(
     )
     ORDER BY ID DESC;`;
 
-    try {
-      const [result] = await db.query(query);
+  try {
+    const [result] = await db.query(query);
 
-      res.json(result);
-    } catch (error) {
-      console.error("Error fetching account list:", error);
-      res.status(500).json({ error: "Database error" });
-    }
-  },
-);
+    res.json(result);
+  } catch (error) {
+    console.error("Error fetching account list:", error);
+    res.status(500).json({ error: "Database error" });
+  }
+});
 
 //LOB List
-router.get("/lobList", async (req, res) => {
+router.get("/lobList", requireRole(...adminRoles), async (req, res) => {
   const { account } = req.query; // Get the selected ACCOUNT from query params
 
   const query = `
@@ -79,7 +75,7 @@ router.get("/lobList", async (req, res) => {
 });
 
 //Task List
-router.get("/taskList", async (req, res) => {
+router.get("/taskList", requireRole(...adminRoles), async (req, res) => {
   const { account, lob } = req.query;
 
   const query = `
@@ -102,7 +98,7 @@ router.get("/taskList", async (req, res) => {
   }
 });
 
-router.get("/accountCode", async (req, res) => {
+router.get("/accountCode", requireRole(...adminRoles), async (req, res) => {
   const { account, lob, task } = req.query;
 
   const query = `

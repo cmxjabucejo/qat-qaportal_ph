@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/dbconfig");
-const { requireRole } = require("../middlewares/authMiddleware");
+const { requireRole, adminRoles } = require("../middlewares/authMiddleware");
 
 router.get("/qa_form_list", async (req, res) => {
   try {
@@ -109,7 +109,7 @@ router.get("/qa_form_by_name/:qaFormName", async (req, res) => {
 
 //QA Form Designer
 //Designer
-router.post("/qa_forms_list", async (req, res) => {
+router.post("/qa_forms_list", requireRole(...adminRoles), async (req, res) => {
   try {
     const {
       QA_FORM_NAME,
@@ -144,7 +144,7 @@ router.post("/qa_forms_list", async (req, res) => {
   }
 });
 
-router.post("/qa_forms_table", async (req, res) => {
+router.post("/qa_forms_table", requireRole(...adminRoles), async (req, res) => {
   try {
     const data = req.body;
 
@@ -175,30 +175,34 @@ router.post("/qa_forms_table", async (req, res) => {
   }
 });
 
-router.put("qa_form_list/:qaFormName/status", async (req, res) => {
-  const { qaFormName } = req.params;
-  const { status } = req.body;
+router.put(
+  "qa_form_list/:qaFormName/status",
+  requireRole(...adminRoles),
+  async (req, res) => {
+    const { qaFormName } = req.params;
+    const { status } = req.body;
 
-  if (!["Active", "Disabled"].includes(status)) {
-    return res.status(400).json({ message: "Invalid status value" });
-  }
-
-  try {
-    const [result] = await db.query(
-      `UPDATE 1003_cmx_appdata_qaportal_database_ph.db_qa_forms_list SET STATUS = ? WHERE QA_FORM_NAME = ?`,
-      [status, qaFormName],
-    );
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Form not found" });
+    if (!["Active", "Disabled"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
     }
 
-    // console.log(`✅ QA Form "${qaFormName}" updated to STATUS: ${status}`);
-    res.status(200).json({ message: "Form status updated" });
-  } catch (error) {
-    console.error("❌ Error updating status:", error);
-    res.status(500).json({ message: "Server error", error });
-  }
-});
+    try {
+      const [result] = await db.query(
+        `UPDATE 1003_cmx_appdata_qaportal_database_ph.db_qa_forms_list SET STATUS = ? WHERE QA_FORM_NAME = ?`,
+        [status, qaFormName],
+      );
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Form not found" });
+      }
+
+      // console.log(`✅ QA Form "${qaFormName}" updated to STATUS: ${status}`);
+      res.status(200).json({ message: "Form status updated" });
+    } catch (error) {
+      console.error("❌ Error updating status:", error);
+      res.status(500).json({ message: "Server error", error });
+    }
+  },
+);
 
 module.exports = router;
