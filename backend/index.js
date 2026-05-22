@@ -198,7 +198,7 @@ async function startServer() {
       standardHeaders: true,
       legacyHeaders: false,
       keyGenerator: (req) =>
-        `${req.body?.emailAddress || "noemail"}_${ipKeyGenerator(req.ip)}`,
+        `${req.path}_${req.body?.emailAddress || "noemail"}_${ipKeyGenerator(req.ip)}`,
     });
 
     // General limiter
@@ -232,6 +232,7 @@ async function startServer() {
 
     // OTP limiter only for OTP route
     app.use("/api/sendOTP", otpLimiter);
+    app.use("/api/verifyOTP", otpLimiter);
 
     // 🔓 PUBLIC ROUTES (NO SESSION)
     app.use("/api", authAPI);
