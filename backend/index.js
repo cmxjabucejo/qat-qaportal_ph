@@ -54,9 +54,52 @@ const PORT = process.env.SERVER_PORT || 5010;
 🔐 SECURITY
 ========================================
 */
-app.use(helmet());
-
 const FRONTEND_URL = process.env.FRONTEND_URL;
+const isProduction = process.env.NODE_ENV === "production";
+const allowedConnectSrc = ["'self'", FRONTEND_URL].filter(Boolean);
+
+app.use(
+  helmet({
+    frameguard: {
+      action: "deny",
+    },
+    noSniff: true,
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https:"],
+        imgSrc: ["'self'", "data:", "https:"],
+        fontSrc: ["'self'", "data:", "https:"],
+        connectSrc: allowedConnectSrc,
+        frameAncestors: ["'none'"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+
+        // Only force upgrade in QAT/PROD.
+        // This avoids localhost http issues during development.
+        ...(isProduction ? { upgradeInsecureRequests: [] } : {}),
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+  }),
+);
+
+app.use((req, res, next) => {
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+  );
+  next();
+});
 
 /*
 ========================================
