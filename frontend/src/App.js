@@ -37,7 +37,22 @@ function RequireAuth({ isAuthed }) {
 ========================================
 */
 function RequireAdminOrHigher({ user }) {
-  const allowedUser = ["QA Admin", "Admin", "Dev", "Team Lead", "Manager"];
+  const allowedUser = ["QA Admin", "Admin"];
+  const location = useLocation();
+
+  const role = user?.userLevel || user?.user_access_level;
+
+  if (!role || !allowedUser.includes(role)) {
+    return (
+      <Navigate to="/Dashboard" replace state={{ from: location.pathname }} />
+    );
+  }
+
+  return <Outlet />;
+}
+
+function RequireQAOrHigher({ user }) {
+  const allowedUser = ["QA, QA Admin", "Admin"];
   const location = useLocation();
 
   const role = user?.userLevel || user?.user_access_level;
@@ -52,7 +67,7 @@ function RequireAdminOrHigher({ user }) {
 }
 
 /*
-========================================
+========================================7
 🔐 REDIRECT IF AUTHED
 ========================================
 */
@@ -227,9 +242,10 @@ export default function App() {
               element={<UserManagement user={user} />}
             />
           </Route>
-
+          <Route element={<RequireQAOrHigher user={user} />}>
+            <Route path="/QAForms" element={<QAForms user={user} />} />
+          </Route>
           <Route path="/Dashboard" element={<QADashboardPage user={user} />} />
-          <Route path="/QAForms" element={<QAForms user={user} />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

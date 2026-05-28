@@ -10,6 +10,7 @@ import { SERVER_URL } from "../lib/constants";
 const AppHeader = ({ user }) => {
   // const isAdmin = UserService.getQAAdminRole();
   const isAdmin = ["QA Admin", "Dev", "Super Admin"].includes(user?.userLevel);
+  const isAgent = ["User", "Agent"].includes(user?.userLevel);
   const location = useLocation();
   const APP_VERSION = pkg.version;
   const navigate = useNavigate();
@@ -140,16 +141,18 @@ const AppHeader = ({ user }) => {
             Dashboard
           </Link>
 
-          <Link
-            to="/QAForms"
-            className={`transition-all ${
-              isActive("/QAForms")
-                ? "text-[#003b5c] font-semibold border-b-2 border-[#003b5c] scale-[1.05]"
-                : "text-gray-700 hover:text-gray-900 hover:border-b-2 hover:border-gray-300"
-            }`}
-          >
-            Create QA Audit
-          </Link>
+          {!isAgent && (
+            <Link
+              to="/QAForms"
+              className={`transition-all ${
+                isActive("/QAForms")
+                  ? "text-[#003b5c] font-semibold border-b-2 border-[#003b5c] scale-[1.05]"
+                  : "text-gray-700 hover:text-gray-900 hover:border-b-2 hover:border-gray-300"
+              }`}
+            >
+              Create QA Audit
+            </Link>
+          )}
 
           {isAdmin === true && (
             <Link
