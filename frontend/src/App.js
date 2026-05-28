@@ -52,7 +52,7 @@ function RequireAdminOrHigher({ user }) {
 }
 
 function RequireQAOrHigher({ user }) {
-  const allowedUser = ["QA, QA Admin", "Admin"];
+  const allowedUser = ["QA", "QA Admin", "Admin"];
   const location = useLocation();
 
   const role = user?.userLevel || user?.user_access_level;

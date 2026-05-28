@@ -246,7 +246,7 @@ const OtpVerification = () => {
           Verify OTP
         </h2>
         <p className="text-sm text-white/80 text-center mb-6">
-          {`If the autentication request is valid, an OTP will be sent to
+          {`If the authentication request is valid, an OTP will be sent to
           ${emailAddress} `}
 
           <br />
