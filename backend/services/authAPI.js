@@ -279,9 +279,7 @@ router.post("/sendOTP", async (req, res) => {
       if (diffSeconds < RESEND_COOLDOWN_SECONDS) {
         return res.status(429).json({
           success: false,
-          message: `Please wait ${
-            RESEND_COOLDOWN_SECONDS - diffSeconds
-          } seconds before requesting a new OTP.`,
+          message: GENERIC_AUTH_MESSAGE,
         });
       }
     }
@@ -451,7 +449,7 @@ router.post("/sendOTP", async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Failed to send OTP.",
+      message: GENERIC_AUTH_MESSAGE,
     });
   }
 });
@@ -471,7 +469,7 @@ router.post("/verifyOTP", async (req, res) => {
   if (!challengeId || !otp) {
     return res.status(400).json({
       success: false,
-      message: "Missing OTP or session.",
+      message: GENERIC_AUTH_MESSAGE,
     });
   }
 
@@ -554,7 +552,7 @@ router.post("/verifyOTP", async (req, res) => {
 
       return res.status(429).json({
         success: false,
-        message: "Too many invalid attempts. Please request a new OTP.",
+        message: GENERIC_AUTH_MESSAGE,
       });
     }
 
@@ -590,10 +588,7 @@ router.post("/verifyOTP", async (req, res) => {
 
       return res.status(newCount >= c.max_attempts ? 429 : 401).json({
         success: false,
-        message:
-          newCount >= c.max_attempts
-            ? "Too many invalid attempts. Please request a new OTP."
-            : "Invalid OTP.",
+        message: GENERIC_AUTH_MESSAGE,
       });
     }
 
@@ -636,7 +631,7 @@ router.post("/verifyOTP", async (req, res) => {
 
       return res.status(403).json({
         success: false,
-        message: "Cannot verify OTP",
+        message: GENERIC_AUTH_MESSAGE,
       });
     }
 
@@ -700,7 +695,7 @@ router.post("/verifyOTP", async (req, res) => {
         console.error("Session regenerate error:", err);
         return res.status(500).json({
           success: false,
-          message: "Session error",
+          message: GENERIC_AUTH_MESSAGE,
         });
       }
 
@@ -722,7 +717,7 @@ router.post("/verifyOTP", async (req, res) => {
 
           return res.status(500).json({
             success: false,
-            message: "Session could not be saved",
+            message: GENERIC_AUTH_MESSAGE,
           });
         }
 
@@ -755,7 +750,7 @@ router.post("/verifyOTP", async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "OTP verification failed.",
+      message: GENERIC_AUTH_MESSAGE,
     });
   }
 });
@@ -770,7 +765,7 @@ router.get("/session", (req, res) => {
   if (!req.session || !req.session.user || !req.session.authenticated) {
     return res.status(401).json({
       success: false,
-      message: "No active session",
+      message: GENERIC_AUTH_MESSAGE,
     });
   }
 
