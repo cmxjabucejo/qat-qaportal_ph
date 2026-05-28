@@ -14,7 +14,7 @@ router.get(
   requireRole(...adminRoles, ...qaRoles, ...agentRoles),
   async (req, res) => {
     try {
-      if ([...adminRoles, ...qaRoles].includes(req.session.user.empId)) {
+      if ([...adminRoles, ...qaRoles].includes(req.session.user.userLevel)) {
         [rows] = await db.execute(
           `SELECT * FROM 1003_cmx_appdata_qaportal_database_ph.db_cmxph_qa_audits`,
         );
