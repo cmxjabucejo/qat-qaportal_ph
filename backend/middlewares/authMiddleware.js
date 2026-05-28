@@ -18,14 +18,7 @@ function requireSession(req, res, next) {
   next();
 }
 
-const adminRoles = [
-  "QA Admin",
-  "Admin",
-  "Dev",
-  "Super Admin",
-  "Team Lead",
-  "Manager",
-];
+const adminRoles = ["QA Admin", "Admin", "Dev", "Team Lead", "TL", "Manager"];
 const agentRoles = ["QA"];
 
 function requireRole(...allowedRoles) {

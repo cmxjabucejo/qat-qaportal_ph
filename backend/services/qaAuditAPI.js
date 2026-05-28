@@ -52,7 +52,10 @@ router.post("/save_qa_audit", async (req, res) => {
     res.status(200).send({ message: "QA Audit entry inserted successfully." });
   } catch (err) {
     console.error("❌ Insert failed:", err.message);
-    res.status(500).send({ error: "Insert failed", details: err.message });
+    res.status(500).send({
+      error: "Internal server error",
+      details: "Error processing request",
+    });
   }
 });
 
@@ -72,7 +75,12 @@ router.get("/audit_by_id/:id", async (req, res) => {
     res.status(200).json(rows[0]);
   } catch (error) {
     console.error("❌ Error fetching audit:", error);
-    res.status(500).json({ message: "Database error", error });
+    res
+      .status(500)
+      .json({
+        message: "Internal server error.",
+        error: "Error processing request.",
+      });
   }
 });
 

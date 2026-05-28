@@ -98,7 +98,7 @@ router.post("/updateAppUser", requireRole(...adminRoles), async (req, res) => {
     console.error("Update user error:", err);
     return res.status(500).json({
       success: false,
-      error: err.message,
+      error: "Internal server error",
     });
   }
 });

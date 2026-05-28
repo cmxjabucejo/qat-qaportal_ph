@@ -33,31 +33,6 @@ const OauthLogin = () => {
     setIsSending(true);
 
     try {
-      const checkRes = await fetch(`${SERVER_URL}/api/check-email`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email }),
-      });
-
-      const checkData = await checkRes.json();
-
-      if (!checkRes.ok || !checkData.success) {
-        setError(
-          checkData.error || "Email is not registered or not authorized.",
-        );
-        return;
-      }
-
-      const user = checkData.user || {};
-
-      if (user.userStatus?.toLowerCase() !== "active") {
-        setError(
-          "This account is not active. Please contact your administrator.",
-        );
-        return;
-      }
-
       const otpRes = await fetch(`${SERVER_URL}/api/sendOTP`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

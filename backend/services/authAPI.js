@@ -15,6 +15,8 @@ require("dotenv").config();
 const OTP_EXPIRY_MINUTES = 3;
 const MAX_VERIFY_ATTEMPTS = 5;
 const RESEND_COOLDOWN_SECONDS = 60;
+const GENERIC_AUTH_MESSAGE = "Invalid credentials or authentication request";
+const IFVALID_AUTH_MESSAGE = "If request is valid, an OTP will be sent.";
 
 /*
 ========================================
@@ -173,7 +175,7 @@ router.post("/check-email", async (req, res) => {
 
       return res.status(403).json({
         success: false,
-        error: "Invalid credentials",
+        error: IFVALID_AUTH_MESSAGE,
       });
     }
 
@@ -232,18 +234,23 @@ router.post("/sendOTP", async (req, res) => {
     );
 
     if (!userRows.length || userRows[0].user_status !== "Active") {
+      const fakeChallengeId = crypto.randomUUID();
+      const fakeExpires = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000);
+
       await writeAuditLog({
         email: emailAddress,
         eventType: "SEND_OTP",
         status: "DENIED",
         ipAddress: ip,
         userAgent: ua,
-        details: "User not found or inactive",
+        details: GENERIC_AUTH_MESSAGE,
       });
 
-      return res.status(400).json({
-        success: false,
-        message: "Invalid credentials",
+      return res.status(200).json({
+        success: true,
+        message: "If the request is valid, an OTP will be sent.",
+        challengeId: fakeChallengeId,
+        expiresAt: fakeExpires,
       });
     }
 
@@ -426,6 +433,7 @@ router.post("/sendOTP", async (req, res) => {
     */
     return res.json({
       success: true,
+      message: GENERIC_AUTH_MESSAGE,
       challengeId,
       expiresAt,
     });
@@ -483,7 +491,7 @@ router.post("/verifyOTP", async (req, res) => {
     if (!rows.length) {
       return res.status(400).json({
         success: false,
-        message: "Invalid OTP session.",
+        message: GENERIC_AUTH_MESSAGE,
       });
     }
 
@@ -497,7 +505,7 @@ router.post("/verifyOTP", async (req, res) => {
     if (c.status !== "pending") {
       return res.status(400).json({
         success: false,
-        message: "OTP session is no longer valid.",
+        message: GENERIC_AUTH_MESSAGE,
       });
     }
 
@@ -525,7 +533,7 @@ router.post("/verifyOTP", async (req, res) => {
 
       return res.status(400).json({
         success: false,
-        message: "OTP expired.",
+        message: GENERIC_AUTH_MESSAGE,
       });
     }
 
@@ -628,7 +636,7 @@ router.post("/verifyOTP", async (req, res) => {
 
       return res.status(403).json({
         success: false,
-        message: "User not allowed.",
+        message: "Cannot verify OTP",
       });
     }
 

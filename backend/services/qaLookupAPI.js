@@ -22,7 +22,12 @@ router.get("/employees", async (req, res) => {
     res.status(200).json(employees);
   } catch (error) {
     console.error("❌ Error fetching employees:", error);
-    res.status(500).json({ message: "Database error", error });
+    res
+      .status(500)
+      .json({
+        message: "Internal server error",
+        error: "Error processsing request.",
+      });
   }
 });
 
@@ -46,7 +51,7 @@ router.get("/accountList", requireRole(...adminRoles), async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("Error fetching account list:", error);
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ error: "Internal server error." });
   }
 });
 
@@ -70,7 +75,7 @@ router.get("/lobList", requireRole(...adminRoles), async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("Error fetching LOB list:", error);
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ error: "Internal server error." });
   }
 });
 
@@ -94,7 +99,7 @@ router.get("/taskList", requireRole(...adminRoles), async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("Error fetching Task list:", error);
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ error: "Internal server error." });
   }
 });
 
@@ -121,7 +126,7 @@ router.get("/accountCode", requireRole(...adminRoles), async (req, res) => {
     }
   } catch (error) {
     console.error("Error fetching ACCOUNTCODE:", error);
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ error: "Internal server error." });
   }
 });
 

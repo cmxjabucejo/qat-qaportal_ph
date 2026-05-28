@@ -15,6 +15,7 @@ const OtpVerification = () => {
 
   const [timeLeft, setTimeLeft] = useState(0);
   const [isExpired, setIsExpired] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const [resendCooldown, setResendCooldown] = useState(0);
   const [isResending, setIsResending] = useState(false);
@@ -121,6 +122,10 @@ const OtpVerification = () => {
       return;
     }
 
+    if (isVerifying) return; // 🔒 prevent double click
+
+    setIsVerifying(true);
+
     try {
       const res = await fetch(`${SERVER_URL}/api/verifyOTP`, {
         method: "POST",
@@ -152,6 +157,8 @@ const OtpVerification = () => {
     } catch (err) {
       console.error(err);
       setError("Verification failed.");
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -238,11 +245,16 @@ const OtpVerification = () => {
         <h2 className="text-2xl font-semibold text-white mb-2 text-center">
           Verify OTP
         </h2>
+        <p className="text-sm text-white/80 text-center mb-6">
+          {`If the autentication request is valid, an OTP will be sent to
+          ${emailAddress} `}
+
+          <br />
+        </p>
 
         <p className="text-sm text-white/80 text-center mb-6">
-          Enter the one-time code sent to
+          Enter the one-time code below
           <br />
-          <span className="font-medium">{emailAddress}</span>
         </p>
 
         {/* OTP INPUT (UNCHANGED STYLE) */}
@@ -263,10 +275,10 @@ const OtpVerification = () => {
         {/* VERIFY BUTTON */}
         <button
           onClick={handleVerifyOtp}
-          disabled={isExpired}
+          disabled={isExpired || isVerifying}
           className="w-full mt-6 py-2.5 rounded-lg text-sm font-medium text-white bg-[#00a1c9] hover:bg-[#0084a4] transition disabled:opacity-50"
         >
-          Verify OTP
+          {isVerifying ? "Verifying..." : "Verify OTP"}
         </button>
 
         {/* ⏱ TIMER / RESEND (REPLACES STATIC TEXT) */}

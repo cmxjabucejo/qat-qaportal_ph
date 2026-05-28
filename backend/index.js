@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const AWS = require("aws-sdk");
 const session = require("express-session");
 
 // 🔴 REDIS
@@ -27,17 +26,6 @@ process.on("uncaughtException", (err) => {
 
 process.on("unhandledRejection", (err) => {
   console.error("🔥 UNHANDLED REJECTION:", err);
-});
-
-/*
-========================================
-🌐 AWS CONFIG
-========================================
-*/
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
 });
 
 /*

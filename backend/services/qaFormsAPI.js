@@ -24,7 +24,12 @@ router.get("/qa_form_list", async (req, res) => {
     res.status(200).json(rows);
   } catch (error) {
     console.error("❌ Error fetching QA form list:", error);
-    res.status(500).json({ message: "Database error", error });
+    res
+      .status(500)
+      .json({
+        message: "Internal server error",
+        error: "Error processsing request.",
+      });
   }
 });
 
@@ -50,7 +55,12 @@ router.get("/qa_form_list_catalog", async (req, res) => {
     res.status(200).json(rows);
   } catch (error) {
     console.error("❌ Error fetching QA form list:", error);
-    res.status(500).json({ message: "Database error", error });
+    res
+      .status(500)
+      .json({
+        message: "Internal server error",
+        error: "Error processsing request.",
+      });
   }
 });
 
@@ -103,7 +113,12 @@ router.get("/qa_form_by_name/:qaFormName", async (req, res) => {
     res.status(200).json({ header: formHeader, details: formDetails });
   } catch (error) {
     console.error("❌ Error fetching form by name:", error);
-    res.status(500).json({ message: "Database error", error });
+    res
+      .status(500)
+      .json({
+        message: "Internal server error",
+        error: "Error processsing request.",
+      });
   }
 });
 
@@ -140,7 +155,7 @@ router.post("/qa_forms_list", requireRole(...adminRoles), async (req, res) => {
     res.status(200).send({ message: "Form list inserted." });
   } catch (err) {
     console.error("Insert failed:", err);
-    res.status(500).send({ error: "Insert failed" });
+    res.status(500).send({ error: "Internal server error" });
   }
 });
 
@@ -171,7 +186,10 @@ router.post("/qa_forms_table", requireRole(...adminRoles), async (req, res) => {
     res.status(200).json({ message: "QA Form saved to db_qa_forms_table." });
   } catch (err) {
     console.error("❌ Error saving QA form:", err);
-    res.status(500).json({ error: "Insert failed", details: err.message });
+    res.status(500).json({
+      error: "Internal server error",
+      details: "Error processing request",
+    });
   }
 });
 
