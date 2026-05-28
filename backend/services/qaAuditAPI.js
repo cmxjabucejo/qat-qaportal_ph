@@ -14,23 +14,27 @@ router.get(
   requireRole(...adminRoles, ...qaRoles, ...agentRoles),
   async (req, res) => {
     try {
-      let rows = [];
       if ([...adminRoles, ...qaRoles].includes(req.session.user.empId)) {
         [rows] = await db.execute(
           `SELECT * FROM 1003_cmx_appdata_qaportal_database_ph.db_cmxph_qa_audits`,
         );
+
+        return res.json({
+          success: true,
+          data: rows,
+        });
       } else {
-        [rows] = await db.execute(
+        const [rows] = await db.execute(
           `
       SELECT * FROM 1003_cmx_appdata_qaportal_database_ph.db_cmxph_qa_audits WHERE AGENT_ID=?;`,
           [req.session.user.empId],
         );
-      }
 
-      return res.json({
-        success: true,
-        data: rows,
-      });
+        return res.json({
+          success: true,
+          data: rows,
+        });
+      }
     } catch (err) {
       console.error("QA Audit DB error:", err);
       return res.status(500).json({
