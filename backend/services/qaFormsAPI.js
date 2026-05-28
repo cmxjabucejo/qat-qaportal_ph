@@ -1,11 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/dbconfig");
-const { requireRole, adminRoles } = require("../middlewares/authMiddleware");
+const {
+  requireRole,
+  adminRoles,
+  qaRoles,
+} = require("../middlewares/authMiddleware");
 
-router.get("/qa_form_list", async (req, res) => {
-  try {
-    const sqlQuery = `
+router.get(
+  "/qa_form_list",
+  requireRole(...adminRoles, ...qaRoles),
+  async (req, res) => {
+    try {
+      const sqlQuery = `
       SELECT 
         fl.QA_FORM_NAME,
         fl.ACCOUNT,
@@ -20,23 +27,25 @@ router.get("/qa_form_list", async (req, res) => {
       WHERE fl.SITE = "PH" and fl.STATUS = "Active"
     `;
 
-    const [rows] = await db.query(sqlQuery);
-    res.status(200).json(rows);
-  } catch (error) {
-    console.error("❌ Error fetching QA form list:", error);
-    res
-      .status(500)
-      .json({
+      const [rows] = await db.query(sqlQuery);
+      res.status(200).json(rows);
+    } catch (error) {
+      console.error("❌ Error fetching QA form list:", error);
+      res.status(500).json({
         message: "Internal server error",
         error: "Error processsing request.",
       });
-  }
-});
+    }
+  },
+);
 
 // Catalog
-router.get("/qa_form_list_catalog", async (req, res) => {
-  try {
-    const sqlQuery = `
+router.get(
+  "/qa_form_list_catalog",
+  requireRole(...adminRoles, ...qaRoles),
+  async (req, res) => {
+    try {
+      const sqlQuery = `
       SELECT 
         fl.QA_FORM_NAME,
         fl.ACCOUNT,
@@ -51,25 +60,27 @@ router.get("/qa_form_list_catalog", async (req, res) => {
       WHERE fl.SITE = "PH"
     `;
 
-    const [rows] = await db.query(sqlQuery);
-    res.status(200).json(rows);
-  } catch (error) {
-    console.error("❌ Error fetching QA form list:", error);
-    res
-      .status(500)
-      .json({
+      const [rows] = await db.query(sqlQuery);
+      res.status(200).json(rows);
+    } catch (error) {
+      console.error("❌ Error fetching QA form list:", error);
+      res.status(500).json({
         message: "Internal server error",
         error: "Error processsing request.",
       });
-  }
-});
+    }
+  },
+);
 
 // get QA Form by Name
-router.get("/qa_form_by_name/:qaFormName", async (req, res) => {
-  const formName = decodeURIComponent(req.params.qaFormName);
+router.get(
+  "/qa_form_by_name/:qaFormName",
+  requireRole(...adminRoles, ...qaRoles),
+  async (req, res) => {
+    const formName = decodeURIComponent(req.params.qaFormName);
 
-  try {
-    const sqlQuery = `
+    try {
+      const sqlQuery = `
         SELECT 
           fl.QA_FORM_NAME,
           fl.ACCOUNT,
@@ -85,42 +96,41 @@ router.get("/qa_form_by_name/:qaFormName", async (req, res) => {
         WHERE fl.QA_FORM_NAME = ?
       `;
 
-    const [rows] = await db.query(sqlQuery, [formName]);
+      const [rows] = await db.query(sqlQuery, [formName]);
 
-    if (rows.length === 0) {
-      return res.status(404).json({ message: "Form not found" });
-    }
+      if (rows.length === 0) {
+        return res.status(404).json({ message: "Form not found" });
+      }
 
-    const formHeader = {
-      QA_FORM_NAME: rows[0].QA_FORM_NAME,
-      ACCOUNT: rows[0].ACCOUNT,
-      LOB: rows[0].LOB,
-      TASK: rows[0].TASK,
-      CREATED_DATE: rows[0].CREATED_DATE,
-      CREATED_BY: rows[0].CREATED_BY,
-      STATUS: rows[0].STATUS,
-    };
+      const formHeader = {
+        QA_FORM_NAME: rows[0].QA_FORM_NAME,
+        ACCOUNT: rows[0].ACCOUNT,
+        LOB: rows[0].LOB,
+        TASK: rows[0].TASK,
+        CREATED_DATE: rows[0].CREATED_DATE,
+        CREATED_BY: rows[0].CREATED_BY,
+        STATUS: rows[0].STATUS,
+      };
 
-    const formDetails = {};
-    rows.forEach((row) => {
-      Object.keys(row).forEach((key) => {
-        if (!(key in formHeader)) {
-          formDetails[key] = row[key];
-        }
+      const formDetails = {};
+      rows.forEach((row) => {
+        Object.keys(row).forEach((key) => {
+          if (!(key in formHeader)) {
+            formDetails[key] = row[key];
+          }
+        });
       });
-    });
 
-    res.status(200).json({ header: formHeader, details: formDetails });
-  } catch (error) {
-    console.error("❌ Error fetching form by name:", error);
-    res
-      .status(500)
-      .json({
+      res.status(200).json({ header: formHeader, details: formDetails });
+    } catch (error) {
+      console.error("❌ Error fetching form by name:", error);
+      res.status(500).json({
         message: "Internal server error",
         error: "Error processsing request.",
       });
-  }
-});
+    }
+  },
+);
 
 //QA Form Designer
 //Designer

@@ -297,12 +297,14 @@ const QADashboardPage = ({ user }) => {
 
           <div className="flex justify-end">
             <div className="space-x-4">
-              <button
-                onClick={() => navigate("/QAForms")}
-                className="w-28 bg-[#f58220] text-white text-sm py-2 rounded hover:bg-orange-600"
-              >
-                + Add Audit
-              </button>
+              {(isAdmin || isQA) && (
+                <button
+                  onClick={() => navigate("/QAForms")}
+                  className="w-28 bg-[#f58220] text-white text-sm py-2 rounded hover:bg-orange-600"
+                >
+                  + Add Audit
+                </button>
+              )}
 
               {isAdmin === true && (
                 <button

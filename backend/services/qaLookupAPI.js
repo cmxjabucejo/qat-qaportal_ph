@@ -1,35 +1,41 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/dbconfig");
-const { requireRole, adminRoles } = require("../middlewares/authMiddleware");
+const {
+  requireRole,
+  adminRoles,
+  qaRoles,
+} = require("../middlewares/authMiddleware");
 
 //------------ Employee Lookup --------------
-router.get("/employees", async (req, res) => {
-  try {
-    const [employees] = await db.query(
-      `SELECT EMPLOYEEID AS employeeId, CONCAT(FIRSTNAME, " ", LASTNAME) AS employee_name, L1_MANAGER_ID as supervisorId, L1_MANAGER_NAME as supervisorName, ACCOUNT as account
+router.get(
+  "/employees",
+  requireRole(...adminRoles, ...qaRoles),
+  async (req, res) => {
+    try {
+      const [employees] = await db.query(
+        `SELECT EMPLOYEEID AS employeeId, CONCAT(FIRSTNAME, " ", LASTNAME) AS employee_name, L1_MANAGER_ID as supervisorId, L1_MANAGER_NAME as supervisorName, ACCOUNT as account
        FROM 0001_cmx_appdata_employeeroster.db_cmxph_employee_roster
        WHERE FULLNAME IS NOT NULL
        AND EMPLOYEESTATUS NOT IN ('Terminated', 'Resigned', 'End of Contract')
        ORDER BY FULLNAME ASC`,
-    );
+      );
 
-    if (employees.length === 0) {
-      return res.status(404).json({ message: "No active employees found" });
-    }
+      if (employees.length === 0) {
+        return res.status(404).json({ message: "No active employees found" });
+      }
 
-    // console.log("✅ Active Employees Fetched:", employees.length);
-    res.status(200).json(employees);
-  } catch (error) {
-    console.error("❌ Error fetching employees:", error);
-    res
-      .status(500)
-      .json({
+      // console.log("✅ Active Employees Fetched:", employees.length);
+      res.status(200).json(employees);
+    } catch (error) {
+      console.error("❌ Error fetching employees:", error);
+      res.status(500).json({
         message: "Internal server error",
         error: "Error processsing request.",
       });
-  }
-});
+    }
+  },
+);
 
 //--------------Account / LOB / TASK -------------------
 //Accoount List
