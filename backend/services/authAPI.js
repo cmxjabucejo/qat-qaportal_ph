@@ -50,6 +50,15 @@ function getUserAgent(req) {
   return req.headers["user-agent"] || null;
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function generateFingerprint(req) {
   const ip = getClientIp(req) || "";
   const ua = getUserAgent(req) || "";
@@ -111,17 +120,21 @@ async function writeAuditLog({
 */
 async function sendNewDeviceAlert({ toEmail, name, ip, userAgent }) {
   const now = new Date().toLocaleString();
+  const safeName = escapeHtml(name || "User");
+  const safeIp = escapeHtml(ip);
+  const safeUserAgent = escapeHtml(userAgent);
+  const safeNow = escapeHtml(now);
 
   const html = `
-    <p>Hi ${name || "User"},</p>
+    <p>Hi ${safeName},</p>
 
     <p>We detected a login to your <strong>QA Portal</strong> account from a <strong>new device</strong>.</p>
 
     <p><strong>Details:</strong></p>
     <ul>
-      <li><strong>IP Address:</strong> ${ip}</li>
-      <li><strong>Device/Browser:</strong> ${userAgent}</li>
-      <li><strong>Time:</strong> ${now}</li>
+      <li><strong>IP Address:</strong> ${safeIp}</li>
+      <li><strong>Device/Browser:</strong> ${safeUserAgent}</li>
+      <li><strong>Time:</strong> ${safeNow}</li>
     </ul>
 
     <p>If this was <strong>not you</strong>, please report it to dream-devops@callmaxsolutions.com.</p>
