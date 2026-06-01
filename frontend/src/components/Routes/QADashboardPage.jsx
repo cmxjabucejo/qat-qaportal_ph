@@ -8,7 +8,7 @@ import UserService from "../../service/UserService";
 import DatePicker from "react-datepicker";
 import AuditViewModal from "../Routes/AuditViewModal";
 import "react-datepicker/dist/react-datepicker.css";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 
 const QADashboardPage = ({ user }) => {
@@ -184,22 +184,37 @@ const QADashboardPage = ({ user }) => {
     );
   };
 
-  const exportToExcel = () => {
+  const exportToExcel = async () => {
     if (filtered.length === 0) return;
 
-    const worksheet = XLSX.utils.json_to_sheet(filtered);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Audits");
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Audits");
 
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
+    // Add headers
+    const headers = Object.keys(filtered[0]);
+    worksheet.addRow(headers);
+
+    // Add data rows
+    filtered.forEach((row) => {
+      worksheet.addRow(headers.map((header) => row[header]));
     });
 
-    const fileData = new Blob([excelBuffer], {
-      type: "application/octet-stream",
+    // Style header
+    worksheet.getRow(1).font = {
+      bold: true,
+    };
+
+    worksheet.columns.forEach((column) => {
+      column.width = 20;
     });
-    saveAs(fileData, "QA_Audits.xlsx");
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(blob, "QA_Audits.xlsx");
   };
 
   return (
