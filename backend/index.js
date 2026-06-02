@@ -163,7 +163,7 @@ async function startServer() {
         cookie: {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
+          sameSite: "strict",
           maxAge: 1000 * 60 * 60 * 8,
         },
       }),
