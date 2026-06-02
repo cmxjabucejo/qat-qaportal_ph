@@ -103,9 +103,13 @@ export default function App() {
   */
   const handleExpire = useCallback(async () => {
     try {
+      const csrfToken = useCsrfStore().getstate().csrfToken;
       await fetch(`${SERVER_URL}/api/logout`, {
         method: "POST",
         credentials: "include",
+        headers: {
+          "X-CSRF-Token": csrfToken,
+        },
       });
     } catch (e) {}
 
@@ -115,7 +119,6 @@ export default function App() {
 
     window.__SESSION_EXPIRED__ = true;
   }, []);
-
   /*
   ========================================
   🔍 SESSION CHECK

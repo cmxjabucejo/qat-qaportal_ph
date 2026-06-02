@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "../common/AppHeader";
-import axios from "axios";
 import { SERVER_URL } from "../lib/constants";
 import "react-datepicker/dist/react-datepicker.css";
 import { apiFetch } from "../lib/apiFetch"; // adjust path if needed

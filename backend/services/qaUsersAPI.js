@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/dbconfig");
 const { requireRole, adminRoles } = require("../middlewares/authMiddleware");
+const validator = require("validator");
 
 router.get("/getAppUsers", requireRole(...adminRoles), async (req, res) => {
   const [rows] = await db.execute(`
@@ -21,9 +22,7 @@ router.post("/addAppUser", requireRole(...adminRoles), async (req, res) => {
   } = req.body;
 
   // ✅ VALIDATE EMAIL FORMAT
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (!emailRegex.test(user_email)) {
+  if (!validator.isEmail(user_email)) {
     return res.status(400).json({
       success: false,
       message: "Invalid email format",
@@ -31,12 +30,10 @@ router.post("/addAppUser", requireRole(...adminRoles), async (req, res) => {
   }
 
   // ✅ ALLOW ONLY COMPANY DOMAIN
-  const domain = user_email.split("@")[1]?.toLowerCase();
-
-  if (domain !== "callmaxsolutions.com") {
+  if (!user_email.toLowerCase().endsWith("@callmaxsolutions.com")) {
     return res.status(400).json({
       success: false,
-      message: "Only @callmaxsolutions.com emails are allowed.",
+      message: "Only @callmaxsolutions emails are allowed",
     });
   }
 

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { SERVER_URL } from "../lib/constants";
 import pkg from "../../../package.json";
+import { getCSRFToken } from "../../service/CSRFService";
+import { useCsrfStore } from "../../store/csrfStore";
 
 const OtpVerification = () => {
   const otpRef = useRef(null);
@@ -143,6 +145,8 @@ const OtpVerification = () => {
         return setError(data.message || "Invalid OTP.");
       }
 
+      const csrfToken = await getCSRFToken();
+      useCsrfStore.getState().setCsrfToken(csrfToken);
       setSuccess("OTP verified successfully!");
 
       // cleanup

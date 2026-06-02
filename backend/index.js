@@ -13,6 +13,21 @@ const helmet = require("helmet");
 const { rateLimit, ipKeyGenerator } = require("express-rate-limit");
 const { requireSession } = require("./middlewares/authMiddleware");
 
+const { doubleCsrf } = require("csrf-csrf");
+
+const { generateToken, doubleCsrfProtection } = doubleCsrf({
+  getSecret: () => process.env.SESSION_SECRET,
+  cookieName: "__Host-csrf-token",
+  cookieOptions: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+  },
+  size: 64,
+  ignoredMethods: ["GET", "HEAD", "OPTIONS"],
+});
+
 dotenv.config();
 
 /*
@@ -168,6 +183,12 @@ async function startServer() {
         },
       }),
     );
+
+    app.get("/api/csrf-token", (req, res) => {
+      res.json({ csrfToken: generateToken(req, res) });
+    });
+
+    app.use(doubleCsrfProtection);
 
     /*
     ========================================

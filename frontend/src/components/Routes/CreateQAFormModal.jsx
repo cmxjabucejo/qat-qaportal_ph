@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import UserService from "../../service/UserService";
 import { SERVER_URL } from "../lib/constants.js";
-import axios from "axios";
 import { apiFetch } from "../lib/apiFetch";
 
 const initialFormData = {

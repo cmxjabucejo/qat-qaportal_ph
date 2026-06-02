@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { SERVER_URL } from "../lib/constants";
-import axios from "axios";
 import UserService from "../../service/UserService";
 import { apiFetch } from "../lib/apiFetch"; // adjust path if needed
 

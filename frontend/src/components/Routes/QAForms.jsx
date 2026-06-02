@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "../common/AppHeader";
-import axios from "axios";
+import { api } from "../lib/axiosInterceptor";
 import { SERVER_URL } from "../lib/constants";
 import UserService from "../../service/UserService";
 
@@ -98,9 +98,7 @@ const QAForms = ({ user }) => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${SERVER_URL}/api/qa_form_list`, {
-        withCredentials: true, // 🔥 REQUIRED for session
-      });
+      const response = await api.get(`${SERVER_URL}/api/qa_form_list`);
       const rawData = response.data;
 
       if (!Array.isArray(rawData) || rawData.length === 0) {
@@ -154,9 +152,7 @@ const QAForms = ({ user }) => {
 
   const fetchEmployees = async () => {
     try {
-      const res = await axios.get(`${SERVER_URL}/api/employees`, {
-        withCredentials: true, // 🔥 REQUIRED for session
-      });
+      const res = await api.get(`${SERVER_URL}/api/employees`);
       setAllEmployees(res.data);
     } catch (error) {
       console.error("❌ Error fetching employees:", error);
@@ -350,9 +346,7 @@ const QAForms = ({ user }) => {
     };
 
     try {
-      await axios.post(`${SERVER_URL}/api/save_qa_audit`, auditPayload, {
-        withCredentials: true,
-      });
+      await api.post(`${SERVER_URL}/api/save_qa_audit`, auditPayload);
       setSaveSuccess(true);
       setShowSaveModal(true);
       // Optional: Reset form

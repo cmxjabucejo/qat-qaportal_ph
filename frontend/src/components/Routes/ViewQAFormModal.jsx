@@ -2,6 +2,7 @@ import React from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { SERVER_URL } from "../lib/constants";
+import { useCsrfStore } from "../../store/csrfStore";
 
 // Group component fields like C01, C02, ..., ZTP
 const groupComponentFields = (flatData) => {
@@ -46,11 +47,15 @@ const ViewQAFormModal = ({ isOpen, onClose, formHeader, formDetails }) => {
     if (!confirm) return;
 
     try {
+      const csrfToken = useCsrfStore().getstate().csrfToken;
       const res = await fetch(
         `${SERVER_URL}/api/qa_form_list/${formHeader.QA_FORM_NAME}/status`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken,
+          },
           credentials: "include", // 🔥 THIS IS THE FIX
           body: JSON.stringify({ status: nextStatus }),
         },

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "../common/AppHeader";
-import axios from "axios";
+import { api } from "../lib/axiosInterceptor";
 import { SERVER_URL } from "../lib/constants";
 import UserService from "../../service/UserService";
 import DatePicker from "react-datepicker";
@@ -56,9 +56,7 @@ const QADashboardPage = ({ user }) => {
 
   const fetchAudits = async () => {
     try {
-      const res = await axios.get(`${SERVER_URL}/api/qaAuditData`, {
-        withCredentials: true, // 🔥 REQUIRED for session
-      });
+      const res = await api.get(`${SERVER_URL}/api/qaAuditData`);
 
       const data = res.data?.data || [];
       setAudits(data);
