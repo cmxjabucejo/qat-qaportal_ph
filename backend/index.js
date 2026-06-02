@@ -14,9 +14,12 @@ const { rateLimit, ipKeyGenerator } = require("express-rate-limit");
 const { requireSession } = require("./middlewares/authMiddleware");
 
 const { doubleCsrf } = require("csrf-csrf");
+const cookieParser = require("cookie-parser");
 
-const { generateToken, doubleCsrfProtection } = doubleCsrf({
+const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
   getSecret: () => process.env.SESSION_SECRET,
+  // required in csrf-csrf v4
+  getSessionIdentifier: (req) => req.sessionID,
   cookieName: "__Host-csrf-token",
   cookieOptions: {
     httpOnly: true,
@@ -123,6 +126,7 @@ app.use(
 */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 /*
 ========================================
@@ -185,11 +189,9 @@ async function startServer() {
     );
 
     app.get("/api/csrf-token", (req, res) => {
-      res.json({ csrfToken: generateToken(req, res) });
+      const csrfToken = generateCsrfToken(req, res);
+      res.json({ csrfToken });
     });
-
-    app.use(doubleCsrfProtection);
-
     /*
     ========================================
     🔥 RATE LIMITERS
@@ -245,6 +247,8 @@ async function startServer() {
 
     // 🔓 PUBLIC ROUTES (NO SESSION)
     app.use("/api", authAPI);
+
+    app.use(doubleCsrfProtection);
 
     // 🔒 PROTECTED ROUTES (SESSION REQUIRED)
     app.use("/api", requireSession, qaUsersAPI);

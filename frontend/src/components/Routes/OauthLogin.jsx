@@ -4,6 +4,7 @@ import { SERVER_URL } from "../lib/constants";
 import logo from "../../assets/callmax_cover_removebg.png";
 import UserService from "../../service/UserService";
 import pkg from "../../../package.json";
+import { useCsrfStore } from "../../store/csrfStore";
 
 const OauthLogin = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const OauthLogin = () => {
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const { csrfToken } = useCsrfStore();
 
   const isCallmaxEmail = (value) => {
     const trimmed = (value || "").trim().toLowerCase();
@@ -35,7 +37,10 @@ const OauthLogin = () => {
     try {
       const otpRes = await fetch(`${SERVER_URL}/api/sendOTP`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken,
+        },
         credentials: "include",
         body: JSON.stringify({
           emailAddress: email,

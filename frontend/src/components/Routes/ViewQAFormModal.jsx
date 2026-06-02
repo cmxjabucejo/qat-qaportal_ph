@@ -33,6 +33,7 @@ const groupComponentFields = (flatData) => {
 };
 
 const ViewQAFormModal = ({ isOpen, onClose, formHeader, formDetails }) => {
+  const csrfToken = useCsrfStore().getState().csrfToken;
   if (!formHeader || !formDetails) return null;
 
   const groupedData = groupComponentFields(formDetails);
@@ -47,7 +48,6 @@ const ViewQAFormModal = ({ isOpen, onClose, formHeader, formDetails }) => {
     if (!confirm) return;
 
     try {
-      const csrfToken = useCsrfStore().getstate().csrfToken;
       const res = await fetch(
         `${SERVER_URL}/api/qa_form_list/${formHeader.QA_FORM_NAME}/status`,
         {

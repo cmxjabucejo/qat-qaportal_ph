@@ -13,6 +13,7 @@ import SessionWarningModal from "./components/common/SessionWarningModal";
 
 import useUnifiedSessionTimer from "./components/lib/useUnifiedSessionTimer";
 import { SERVER_URL } from "./components/lib/constants";
+import { useCsrfStore } from "./store/csrfStore";
 
 /*
 ========================================
@@ -86,6 +87,7 @@ export default function App() {
   const [isAuthed, setIsAuthed] = useState(null);
   const [user, setUser] = useState(null);
   const [sessionExpired, setSessionExpired] = useState(false);
+  const { csrfToken } = useCsrfStore();
 
   /*
   ========================================
@@ -103,7 +105,6 @@ export default function App() {
   */
   const handleExpire = useCallback(async () => {
     try {
-      const csrfToken = useCsrfStore().getstate().csrfToken;
       await fetch(`${SERVER_URL}/api/logout`, {
         method: "POST",
         credentials: "include",
