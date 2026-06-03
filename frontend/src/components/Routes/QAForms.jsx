@@ -38,9 +38,7 @@ const QAForms = ({ user }) => {
   const [userType, setUserType] = useState([]);
   const isFormSelected = Boolean(selectedForm);
   const isAgentSelected = Boolean(selectedEmployeeId) || isManualEntry;
-  const { csrfToken } = useCsrfStore();
 
-  console.log(csrfToken);
 
   const groupComponentFields = (flatData) => {
     const grouped = {};
