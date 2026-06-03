@@ -135,6 +135,9 @@ export default function App() {
           method: "GET",
           credentials: "include",
           cache: "no-store",
+          headers: {
+            "X-CSRF-Token": csrfToken,
+          },
         });
 
         if (res.ok) {

@@ -16,6 +16,8 @@ const { requireSession } = require("./middlewares/authMiddleware");
 const { doubleCsrf } = require("csrf-csrf");
 const cookieParser = require("cookie-parser");
 
+dotenv.config();
+
 const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
   getSecret: () => process.env.SESSION_SECRET,
   // required in csrf-csrf v4
@@ -30,8 +32,6 @@ const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
   size: 64,
   ignoredMethods: ["GET", "HEAD", "OPTIONS"],
 });
-
-dotenv.config();
 
 /*
 ========================================
@@ -116,6 +116,13 @@ app.use(
   cors({
     origin: [FRONTEND_URL],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-CSRF-Token",
+      "x-device-id",
+    ],
   }),
 );
 

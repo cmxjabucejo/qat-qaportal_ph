@@ -6,6 +6,7 @@ import phFlag from "../../assets/phFlag.png";
 import UserService from "../../service/UserService";
 import pkg from "../../../package.json";
 import { SERVER_URL } from "../lib/constants";
+import { useCsrfStore } from "../../store/csrfStore";
 
 const AppHeader = ({ user }) => {
   // const isAdmin = UserService.getQAAdminRole();
@@ -17,6 +18,7 @@ const AppHeader = ({ user }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
   const [showAbout, setShowAbout] = useState(false);
+  const { csrfToken } = useCsrfStore();
 
   // const { firstname, lastname, email } = UserService.getCurrentUser() || {};
 
@@ -33,6 +35,9 @@ const AppHeader = ({ user }) => {
       await fetch(`${SERVER_URL}/api/logout`, {
         method: "POST",
         credentials: "include",
+        headers: {
+          "X-CSRF-Token": csrfToken,
+        },
       });
     } catch (e) {}
 

@@ -39,7 +39,6 @@ const OauthLogin = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken,
         },
         credentials: "include",
         body: JSON.stringify({
