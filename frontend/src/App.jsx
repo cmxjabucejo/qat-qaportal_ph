@@ -14,6 +14,7 @@ import SessionWarningModal from "./components/common/SessionWarningModal";
 import useUnifiedSessionTimer from "./components/lib/useUnifiedSessionTimer";
 import { SERVER_URL } from "./components/lib/constants";
 import { useCsrfStore } from "./store/csrfStore";
+import { getCSRFToken } from "./service/CSRFService";
 
 /*
 ========================================
@@ -146,6 +147,8 @@ export default function App() {
           if (data.success && data.user) {
             setUser(data.user);
             setIsAuthed(true);
+            const csrfToken = await getCSRFToken();
+            useCsrfStore.getState().setCsrfToken(csrfToken);
             return;
           }
         }

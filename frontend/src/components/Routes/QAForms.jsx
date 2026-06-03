@@ -5,6 +5,7 @@ import AppHeader from "../common/AppHeader";
 import { api } from "../lib/axiosInterceptor";
 import { SERVER_URL } from "../lib/constants";
 import UserService from "../../service/UserService";
+import { useCsrfStore } from "../../store/csrfStore";
 
 const QAForms = ({ user }) => {
   const navigate = useNavigate();
@@ -37,6 +38,9 @@ const QAForms = ({ user }) => {
   const [userType, setUserType] = useState([]);
   const isFormSelected = Boolean(selectedForm);
   const isAgentSelected = Boolean(selectedEmployeeId) || isManualEntry;
+  const { csrfToken } = useCsrfStore();
+
+  console.log(csrfToken);
 
   const groupComponentFields = (flatData) => {
     const grouped = {};
