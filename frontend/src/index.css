@@ -46,9 +46,10 @@ code {
   25% { transform: translateX(-2px); }
   75% { transform: translateX(2px); }
 }
-.animate-\[shake_0.3s_ease-in-out_2\] {
+
+/* .animate-\[shake_0.3s_ease-in-out_2\] {
   animation: shake 0.3s ease-in-out 2;
-}
+} */
 
 .react-datepicker-popper {
   z-index: 9999 !important;
