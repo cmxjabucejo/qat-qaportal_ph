@@ -38,9 +38,6 @@ const QAForms = ({ user }) => {
   const [userType, setUserType] = useState([]);
   const isFormSelected = Boolean(selectedForm);
   const isAgentSelected = Boolean(selectedEmployeeId) || isManualEntry;
-  const { csrfToken } = useCsrfStore();
-
-  console.log(csrfToken);
 
   const groupComponentFields = (flatData) => {
     const grouped = {};
@@ -847,6 +844,13 @@ const QAForms = ({ user }) => {
                 </div>
               );
             })()}
+          {!isFormGenerated && (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-400 text-md">
+                Please select a QA Form, Agent, and Evaluation Type to generate.
+              </p>
+            </div>
+          )}
         </div>
       </main>
 

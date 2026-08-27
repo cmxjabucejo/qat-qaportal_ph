@@ -33,7 +33,7 @@ const groupComponentFields = (flatData) => {
 };
 
 const ViewQAFormModal = ({ isOpen, onClose, formHeader, formDetails }) => {
-  const csrfToken = useCsrfStore().getState().csrfToken;
+  const csrfToken = useCsrfStore.getState().csrfToken;
   if (!formHeader || !formDetails) return null;
 
   const groupedData = groupComponentFields(formDetails);
