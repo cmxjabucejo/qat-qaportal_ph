@@ -29,22 +29,6 @@ const QADashboardPage = ({ user }) => {
   const [selectedAudit, setSelectedAudit] = useState(null);
   const isQA = ["QA", "Team Lead", "Manager"].includes(user?.userLevel);
   const isAdmin = ["QA Admin", "Dev", "Super Admin"].includes(user?.userLevel);
-  // const isQA = UserService.getQARole();
-  // const isAdmin = UserService.getQAAdminRole();
-
-  // useEffect(() => {
-  //   const firstName = localStorage.getItem("userFirstname") || "";
-  //   const lastName = localStorage.getItem("userLastname") || "";
-  //   const storedempId = localStorage.getItem("empId");
-  //   const storedUserId = localStorage.getItem("userId");
-  //   const storedUserName = `${firstName} ${lastName}`.trim();
-
-  //   setUserId(storedUserId);
-  //   setUserName(storedUserName);
-  //   setEmpId(storedempId);
-  //   fetchAudits();
-  // }, []);
-
   useEffect(() => {
     if (!user) return;
 
@@ -55,6 +39,7 @@ const QADashboardPage = ({ user }) => {
   }, [user]);
 
   const fetchAudits = async () => {
+    setLoading(true);
     try {
       const res = await api.get(`${SERVER_URL}/api/qaAuditData`);
 
@@ -409,7 +394,14 @@ const QADashboardPage = ({ user }) => {
                 </tr>
               </thead>
               <tbody>
-                {filtered.length === 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan="8" className="text-center py-4 text-gray-400">
+                      Fetching QA audit data...
+                      <circle className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full inline-block ml-2" />
+                    </td>
+                  </tr>
+                ) : !loading && filtered.length === 0 ? (
                   <tr>
                     <td colSpan="8" className="text-center text-gray-400 py-4">
                       No records found.

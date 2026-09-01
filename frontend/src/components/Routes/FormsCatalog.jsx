@@ -3,22 +3,13 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "../common/AppHeader";
 import { SERVER_URL } from "../lib/constants";
-//import UserService from "../../service/UserService";
-//import DatePicker from "react-datepicker";
 import CreateQAFormModal from "./CreateQAFormModal";
-//import AuditViewModal from "./AuditViewModal"
 import ViewQAFormModal from "./ViewQAFormModal";
 import UserService from "../../service/UserService";
 import "react-datepicker/dist/react-datepicker.css";
 import { apiFetch } from "../lib/apiFetch";
 
 const FormsCatalog = ({ user }) => {
-  const navigate = useNavigate();
-  const isSuperAdmin = UserService.getSuperAdminRole();
-  const [userid, setUserId] = useState("");
-  const [empId, setEmpId] = useState([]);
-  const [userName, setUserName] = useState("");
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [rows, setRows] = useState([]);
   const [filteredRows, setFilteredRows] = useState([]);
@@ -31,10 +22,10 @@ const FormsCatalog = ({ user }) => {
     key: null,
     direction: "asc",
   });
-
-  const tableRef = useRef(null);
+  const [isfetching, setIsFetching] = useState(false);
 
   const fetchData = async () => {
+    setIsFetching(true);
     try {
       const res = await apiFetch(`${SERVER_URL}/api/qa_form_list_catalog`);
 
@@ -54,6 +45,8 @@ const FormsCatalog = ({ user }) => {
       setFilteredRows(rawData);
     } catch (err) {
       console.error("❌ Error fetching QA forms:", err);
+    } finally {
+      setIsFetching(false);
     }
   };
 
@@ -87,21 +80,8 @@ const FormsCatalog = ({ user }) => {
     setFilteredRows(filtered);
   };
 
-  // useEffect(() => {
-  //   fetchData();
-
-  //   const storedUserId = localStorage.getItem("userid");
-  //   const storedUserName = localStorage.getItem("name");
-  //   setUserId(storedUserId);
-  //   setUserName(storedUserName);
-  // }, []);
-
   useEffect(() => {
     if (!user) return;
-
-    setUserId(user.userid);
-    setUserName(user.fullName);
-    setEmpId(user.empId);
 
     fetchData(); // 🔥 ADD THIS
   }, [user]);
@@ -275,7 +255,17 @@ const FormsCatalog = ({ user }) => {
                 </tr>
               </thead>
               <tbody>
-                {filteredRows.length > 0 ? (
+                {isfetching ? (
+                  <tr>
+                    <td
+                      colSpan="7"
+                      className="text-center py-3 text-gray-500 text-sm"
+                    >
+                      Fetching QA form data...{" "}
+                      <circle className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full inline-block ml-2" />
+                    </td>
+                  </tr>
+                ) : filteredRows.length > 0 ? (
                   sortedRows.map((row, index) => (
                     <tr
                       key={index}
@@ -317,14 +307,16 @@ const FormsCatalog = ({ user }) => {
                     </tr>
                   ))
                 ) : (
-                  <tr>
-                    <td
-                      colSpan="6"
-                      className="text-center py-3 text-gray-500 text-sm"
-                    >
-                      No QA form data available
-                    </td>
-                  </tr>
+                  !isfetching && (
+                    <tr>
+                      <td
+                        colSpan="6"
+                        className="text-center py-3 text-gray-500 text-sm"
+                      >
+                        No QA form data available
+                      </td>
+                    </tr>
+                  )
                 )}
               </tbody>
             </table>
